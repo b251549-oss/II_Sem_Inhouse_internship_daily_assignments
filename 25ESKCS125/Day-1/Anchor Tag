@@ -1,0 +1,7 @@
+<!-- External link (absolute)-->
+<a href="https://github.com/you"
+   target="_blank">
+  My GitHub
+</a>
+<!-- Internal link (relative) -->
+<a href="contact.html">COntact</a>
