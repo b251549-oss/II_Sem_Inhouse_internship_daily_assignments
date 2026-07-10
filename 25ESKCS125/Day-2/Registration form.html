@@ -1,14 +1,20 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Registration Form</title>
 
 <style>
-body{
+*{
     margin:0;
     padding:0;
-    background:#080d1d;
-    font-family:Arial, sans-serif;
+    box-sizing:border-box;
+    font-family:Arial,sans-serif;
+}
+
+body{
+    background:#0b1120;
     display:flex;
     justify-content:center;
     align-items:center;
@@ -16,54 +22,55 @@ body{
 }
 
 form{
-    width:350px;
-    padding:30px;
-    background:#0d1328;
+    width:450px;
+    background:#111827;
+    padding:40px;
     border-radius:20px;
 }
 
 h1{
-    color:#fff;
+    color:white;
     text-align:center;
     margin-bottom:25px;
+    font-size:36px;
 }
 
 input,
 select{
     width:100%;
-    padding:15px;
+    padding:16px;
     margin:12px 0;
     border:2px solid #00bfff;
     border-radius:18px;
-    background:#0d1328;
-    color:#fff;
-    font-size:16px;
+    background:#111827;
+    color:white;
+    font-size:17px;
     outline:none;
-    box-sizing:border-box;
 }
 
 input::placeholder{
-    color:#fff;
+    color:white;
 }
 
 select{
-    color:#fff;
+    color:white;
 }
 
 input[type="submit"]{
     border:2px solid #00ff99;
-    font-size:18px;
+    font-size:20px;
     font-weight:bold;
     cursor:pointer;
 }
 
 input[type="submit"]:hover{
     background:#00ff99;
-    color:#000;
+    color:black;
 }
 </style>
 
 </head>
+
 <body>
 
 <form>
