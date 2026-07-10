@@ -3,4 +3,18 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport"
-          content
+          content="Width=device-width, initial-scale=1.0">
+    <title>My FIrst Web Page</title>
+  </head>
+  <body>
+    <!--Your visible content goes here-->
+<h1>Profile Section</h1>
+<h2>My Background</h2>
+<p>I'm a B.Tech. student at Swami Keshvanand Institute of Technology, Management & Gramothan, Jaipur</p>
+<hr>
+<img src="https://erp.skit.ac.in/uploads/images/xB251549.jpg.pagespeed.ic.s7BXXy-hzz.webp alt="Student Profile Photo">
+<table border="!">
+ <tr>
+<th>
+  </body>
+</html>
