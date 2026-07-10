@@ -3,36 +3,63 @@
 <head>
 <title>Registration Form</title>
 
-<style>
 body{
-    background:#050816;
+    margin:0;
+    padding:0;
+    background:#080d1d;
+    font-family:Arial, sans-serif;
     display:flex;
     justify-content:center;
     align-items:center;
     height:100vh;
-    margin:0;
 }
 
 form{
     width:350px;
+    padding:30px;
+    background:#0d1328;
+    border-radius:20px;
 }
 
 h1{
-    color:white;
-    margin-bottom:20px;
+    color:#fff;
+    text-align:center;
+    margin-bottom:25px;
 }
 
-input,select{
-    height:50px;
-    margin-bottom:18px;
+input,
+select{
+    width:100%;
+    padding:15px;
+    margin:12px 0;
+    border:2px solid #00bfff;
+    border-radius:18px;
+    background:#0d1328;
+    color:#fff;
+    font-size:16px;
+    outline:none;
+    box-sizing:border-box;
+}
+
+input::placeholder{
+    color:#fff;
+}
+
+select{
+    color:#fff;
 }
 
 input[type="submit"]{
-    background:transparent;
-    color:white;
+    border:2px solid #00ff99;
+    font-size:18px;
     font-weight:bold;
+    cursor:pointer;
 }
-</style>
+
+input[type="submit"]:hover{
+    background:#00ff99;
+    color:#000;
+}
 
 </head>
 
