@@ -14,15 +14,17 @@
 }
 
 body{
+    margin:0;
     background:#0b1120;
     display:flex;
     justify-content:center;
     align-items:center;
     height:100vh;
+    font-family:Arial,sans-serif;
 }
 
 form{
-    width:450px;
+    width:900px;
     background:#111827;
     padding:40px;
     border-radius:20px;
@@ -31,36 +33,38 @@ form{
 h1{
     color:white;
     text-align:center;
-    margin-bottom:25px;
-    font-size:36px;
+    margin-bottom:30px;
 }
 
-input,
-select{
-    width:100%;
+.row{
+    display:flex;
+    gap:20px;
+    margin-bottom:20px;
+}
+
+.row input,
+.row select{
+    flex:1;
+}
+
+input,select{
     padding:16px;
-    margin:12px 0;
     border:2px solid #00bfff;
     border-radius:18px;
     background:#111827;
     color:white;
-    font-size:17px;
-    outline:none;
-}
-
-input::placeholder{
-    color:white;
-}
-
-select{
-    color:white;
+    font-size:16px;
+    box-sizing:border-box;
 }
 
 input[type="submit"]{
+    width:100%;
+    padding:16px;
     border:2px solid #00ff99;
+    border-radius:18px;
+    background:#111827;
+    color:white;
     font-size:20px;
-    font-weight:bold;
-    cursor:pointer;
 }
 
 input[type="submit"]:hover{
@@ -75,30 +79,7 @@ input[type="submit"]:hover{
 
 <form>
 
-<h1>Registration Form</h1>
-
-<input type="text" placeholder="Name">
-
-<input type="email" placeholder="Email">
-
-<input type="tel" placeholder="Phone">
-
-<select>
-    <option>Select Gender</option>
-    <option>Male</option>
-    <option>Female</option>
-    <option>Other</option>
-</select>
-
-<input type="date">
-
-<input type="text" placeholder="Department">
-
-<input type="password" placeholder="Password">
-
-<input type="password" placeholder="Confirm Password">
-
-<input type="submit" value="Submit">
+https://github.com/b251549-oss/II_Sem_Inhouse_internship_daily_assignments/blob/main/25ESKCS125/Day-2/Registration%20form.html
 
 </form>
 
