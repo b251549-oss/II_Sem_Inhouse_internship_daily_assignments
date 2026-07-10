@@ -1,34 +1,82 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Registration Form</title>
-</head>
-<body>
+<title>Registration Form</title>
 
-<h1>Registration Form</h1>
+<style>
+body{
+    background:#0b1120;
+    font-family:Arial,sans-serif;
+}
+
+form{
+    width:400px;
+    margin:40px auto;
+    padding:30px;
+    background:#111827;
+    border-radius:15px;
+}
+
+h1{
+    color:white;
+    text-align:center;
+}
+
+input,select{
+    width:100%;
+    padding:12px;
+    margin:10px 0;
+    border:2px solid #00bfff;
+    border-radius:15px;
+    background:#111827;
+    color:white;
+    font-size:16px;
+}
+
+input::placeholder{
+    color:white;
+}
+
+input[type="submit"]{
+    border:2px solid #00ff99;
+    cursor:pointer;
+    font-size:18px;
+}
+
+input[type="submit"]:hover{
+    background:#00ff99;
+    color:black;
+}
+</style>
+
+</head>
+
+<body>
 
 <form>
 
-<input type="text" placeholder="Name"><br><br>
+<h1>Registration Form</h1>
 
-<input type="email" placeholder="Email"><br><br>
+<input type="text" placeholder="Name">
 
-<input type="tel" placeholder="Phone"><br><br>
+<input type="email" placeholder="Email">
+
+<input type="tel" placeholder="Phone">
 
 <select>
     <option>Select Gender</option>
     <option>Male</option>
     <option>Female</option>
     <option>Other</option>
-</select><br><br>
+</select>
 
-<input type="date"><br><br>
+<input type="date">
 
-<input type="text" placeholder="Department"><br><br>
+<input type="text" placeholder="Department">
 
-<input type="password" placeholder="Password"><br><br>
+<input type="password" placeholder="Password">
 
-<input type="password" placeholder="Confirm Password"><br><br>
+<input type="password" placeholder="Confirm Password">
 
 <input type="submit" value="Submit">
 
