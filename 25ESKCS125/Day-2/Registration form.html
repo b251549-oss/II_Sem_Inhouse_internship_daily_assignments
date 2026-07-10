@@ -14,7 +14,10 @@
 }
 
 body{
-    background:#0b1120;
+    margin:0;
+    padding:0;
+    font-family:Arial, sans-serif;
+    background:linear-gradient(135deg,#0b1120,#1b2a49);
     display:flex;
     justify-content:center;
     align-items:center;
@@ -22,36 +25,57 @@ body{
 }
 
 form{
-    width:1200px;
-    padding:60px;
+    width:900px;
+    padding:35px;
+    background:#111827;
+    border-radius:20px;
 }
 
 h1{
-    font-size:48px;
-    margin-bottom:40px;
+    color:white;
+    text-align:center;
+    margin-bottom:25px;
 }
 
-.container{
-    gap:30px;
+.row{
+    display:flex;
+    gap:20px;
+    margin-bottom:20px;
+}
+
+.row input,
+.row select{
+    flex:1;
 }
 
 input,
 select{
-    height:75px;
-    font-size:22px;
-    padding:20px;
-    border:3px solid #00bfff;
-    border-radius:35px;
+    width:100%;
+    padding:15px;
+    border:2px solid #00bfff;
+    border-radius:20px;
+    background:#111827;
+    color:white;
+    font-size:16px;
+    outline:none;
+}
+
+input::placeholder{
+    color:#cfd8dc;
+}
+
+select{
+    color:white;
 }
 
 input[type="submit"]{
-    height:75px;
-    font-size:24px;
-    border:3px solid #00ff99;
-}
-
-input[type="submit"]{
+    width:100%;
+    padding:15px;
     border:2px solid #00ff99;
+    border-radius:20px;
+    background:#111827;
+    color:white;
+    font-size:18px;
     font-weight:bold;
     cursor:pointer;
 }
