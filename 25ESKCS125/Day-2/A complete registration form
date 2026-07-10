@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+    <title>A complete registration form</title>
+  </head>
+  <body>
+   <!--Your visible content goes here-->
+<form action="#" method="post">
+ <label for="name">Name</label>
+ <input type="text" id="name"
+ name="name">
+ <label for="email">Email</label>
+ <input type="text" id="email"
+ name="email">
+ <label for="phone">Phone</label>
+ <input type="tel" id="phone"
+ name="phone">
+ <label for="gender">Gender</label>
+ <input type="radio" id="gender"
+ name="gender">
+ <label for="dob">DOB</label>
+ <input type="date" id="dob"
+ name="dob">
+ <label for="department">Department</label>
+ <input type="text" id="department"
+ name="department">
+ <label for="password">Password</label>
+ <input type="password" id="password"
+ name="password">
+ <label for="confirmpassword">Confirm Password</label>
+ <input type="password" id="confirmpassword"
+ name="confirmpassword">
+ <button type="submit">
+ Submit
+ </button>
+</form>
+ </body>
+</html>
