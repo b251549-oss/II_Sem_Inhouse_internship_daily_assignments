@@ -1,0 +1,10 @@
+.form {
+    padding: 30px;
+}
+.input-box {
+   margin: 12px;
+}
+input,
+select {
+    padding: 15px 18px;
+}
