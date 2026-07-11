@@ -1,0 +1,10 @@
+button:hover {
+    background: linear-gradient(90deg, #00ffc8, #00bfff);
+    color: #000;
+    box-shadow: 0 0 20px rgba(0, 255, 200, 0.7);
+    transform: scale(1.02);
+}
+input:hover,
+select:hover {
+    box-shadow: 0 0 12px rgba(0, 255, 255, 0.5);
+}
