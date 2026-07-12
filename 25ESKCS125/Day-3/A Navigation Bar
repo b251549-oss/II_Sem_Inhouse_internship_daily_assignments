@@ -2,8 +2,12 @@
 <html lang="en">
 <head>
     <link rel="stylesheet" href="Day-2/Spacing">
+</head>
+<head>
     <link rel="stylesheet" href="Day-2/Rounded Corners">
-    <link rel="stylesheet" href="Day-2/Hover Effect">
+</head>
+<head>
+        <link rel="stylesheet" href="Day-2/Hover Effect">
 </head>
 <body>
    <form action="#" method="POST">
@@ -52,7 +56,3 @@
 
 </body>
 </html>
-<justify-content>
-<align-items>
-<gap>
-<flex-direction>
