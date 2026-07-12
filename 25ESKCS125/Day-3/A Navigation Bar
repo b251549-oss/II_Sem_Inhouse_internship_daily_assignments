@@ -1,23 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Company Services</title>
-    <!-- Combined heads and fixed the missing rel/href attributes -->
-    <link rel="stylesheet" href="Day-2/Spacing.css">
-    <link rel="stylesheet" href="Day-2/Rounded-Corners.css">
-    <link rel="stylesheet" href="Day-2/Hover-Effect.css">
+    <link rel="stylesheet" href="Day-2/Spacing">
+    <link rel="stylesheet" href="Day-2/Rounded Corners">
+    <link rel="stylesheet" href="Day-2/Hover Effect">
 </head>
 <body>
-    <!-- Added navigation header based on bottom text -->
-    <header>
-        <img src="logo.png" alt="Company Logo">
-        <nav>
-            <a href="#">Home</a>
-        </nav>
-   </header>
-   <!-- Main form container -->
    <form action="#" method="POST">
        <h2>Company Services</h2>
 
@@ -45,7 +33,6 @@
         
            <p>
                <label for="gpa">High School GPA:</label>
-               <!-- Changed type to number for better mobile input and validation -->
                <input type="number" id="gpa" name="gpa" placeholder="4.0" step="0.1" min="0.0" max="4.0" required>
            </p>
         
@@ -60,8 +47,7 @@
                </select>
            </p>
        </fieldset>
-       <!-- Changed text from 'Login' to 'Submit' to match the form content -->
-       <button type="submit">Submit Application</button>
+       <button type="submit">Login</button>
    </form>
 
 </body>
