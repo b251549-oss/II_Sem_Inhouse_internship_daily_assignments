@@ -54,5 +54,9 @@
        <button type="submit">Login</button>
    </form>
 
+   <footer>
+       <img src="logo.png" alt="Company Logo">
+       <a href="index.html">HOme</a>
+   </footer>
 </body>
 </html>
