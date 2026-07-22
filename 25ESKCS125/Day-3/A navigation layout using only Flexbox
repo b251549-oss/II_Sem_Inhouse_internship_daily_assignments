@@ -1,1 +1,17 @@
-Container: Flex layout, vertical direction, centered items, centered content, 20px padding.Form: Flex layout, vertical direction, 20px gaps, 100% width.Sections: Flex layout, vertical direction, 15px gaps.Fields: Flex layout, vertical direction, 5px gaps.Footer: Flex layout, horizontal direction, centered items, centered content, 10px gaps.
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
