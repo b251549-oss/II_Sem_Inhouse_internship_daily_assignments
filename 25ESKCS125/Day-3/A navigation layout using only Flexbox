@@ -1,17 +1,57 @@
-body {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Company Services</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
 
-form {
-    display: flex;
-    flex-direction: column;
-}
+    <form action="#" method="POST">
+        <h2>Company Services</h2>
+        
+        <fieldset>
+            <legend>Contact</legend>
+            <p>
+                <label for="fullName">Full Name:</label>
+                <input type="text" id="fullName" name="fullName" placeholder="John Doe" required>
+            </p>
+            <p>
+                <label for="email">Email Address:</label>
+                <input type="email" id="email" name="email" placeholder="john.doe@example.com" required>
+            </p>
+            <p>
+                <label for="phone">Phone Number:</label>
+                <input type="tel" id="phone" name="phone" placeholder="123-456-7890" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" required>
+            </p>
+        </fieldset>
+        
+        <fieldset>
+            <legend>About</legend>
+            <p>
+                <label for="gpa">High School GPA:</label>
+                <input type="number" id="gpa" name="gpa" placeholder="4.0" step="0.1" min="0.0" max="4.0" required>
+            </p>
+            <p>
+                <label for="major">Intended Major:</label>
+                <select id="major" name="major" required>
+                    <option value="" disabled selected>Select your major</option>
+                    <option value="engineering">Engineering</option>
+                    <option value="science">Computer Science</option>
+                    <option value="arts">Fine Arts</option>
+                    <option value="business">Business Administration</option>
+                </select>
+            </p>
+        </fieldset>
+        
+        <button type="submit">Login</button>
+    </form>
 
-footer {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
+    <footer>
+        <img src="logo.png" alt="Company Logo">
+        <a href="Day-2/index.html">Home</a>
+    </footer>
+
+</body>
+</html>
