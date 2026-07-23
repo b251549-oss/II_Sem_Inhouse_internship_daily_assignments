@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://jsdelivr.net" rel="stylesheet">
+    
+    <!-- Include Bootstrap Icons CDN Link -->
+    <link rel="stylesheet" href="https://jsdelivr.net">
+
+    <style>
+        /* Smooth Scroll Configuration Rule */
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 70px; 
+        }
+
+        /* Custom Color Theme Configuration Variables */
+        :root {
+            --theme-dark: #0f172a;       
+            --theme-accent: #2563eb;     
+            --theme-text-light: #f8fafc; 
+            --theme-text-muted: #94a3b8; 
+        }
+
+        /* Custom Applied Utility Classes */
+        .bg-theme-dark { 
+            background-color: var(--theme-dark); 
+        }
+        .text-theme-accent { 
+            color: var(--theme-accent); 
+        }
+        .text-theme-light { 
+            color: var(--theme-text-light); 
+        }
+        .text-theme-muted { 
+            color: var(--theme-text-muted); 
+        }
+
+        /* Gradient Hero Background Layout Rule */
+        .bg-gradient-hero {
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #2563eb 100%);
+        }
+
+        /* Hover Animation Style Rule */
+        .hover-animate-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .hover-animate-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
+        }
+
+        /* Simple sizing and spacing utility class for icon placement */
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 1. STICKY NAVIGATION BAR -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-theme-dark sticky-top border-bottom border-secondary">
+        <div class="container">
+            <a class="navbar-brand text-theme-light fw-bold" href="#">Logo</a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link text-theme-muted" href="#hero">Home</a>
+                <a class="nav-link text-theme-muted" href="#features">Features</a>
+                <a class="nav-link text-theme-muted" href="#team">Team</a>
+                <a class="nav-link text-theme-muted" href="#contact">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Theme Container wrapper -->
+    <div class="bg-theme-dark min-vh-100">
+
+        <!-- 2. HERO SECTION -->
+        <div id="hero" class="bg-gradient-hero py-5 mb-5">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-6 text-theme-light"></div>
+                    <div class="col-lg-6"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. FEATURE SECTION WITH BOOTSTRAP ICONS -->
+        <div id="features" class="container mb-5 py-3">
+            <div class="row">
+                <!-- Feature 1: Expert Trainers Icon Layout -->
+                <div class="col-md-4">
+                    <div class="hover-animate-card text-theme-light p-4 rounded bg-secondary bg-opacity-10">
+                        <i class="bi bi-person-workspace text-theme-accent feature-icon"></i>
+                        <h4>Expert Trainers</h4>
+                        <p class="text-theme-muted">Learn from professionals.</p>
+                    </div>
+                </div>
+                <!-- Feature 2: Hands-on Projects Icon Layout -->
+                <div class="col-md-4">
+                    <div class="hover-animate-card text-theme-light p-4 rounded bg-secondary bg-opacity-10">
+                        <i class="bi bi-laptop text-theme-accent feature-icon"></i>
+                        <h4>Hands-on Projects</h4>
+                        <p class="text-theme-muted">Build real systems.</p>
+                    </div>
+                </div>
+                <!-- Feature 3: Placement Support Icon Layout -->
+                <div class="col-md-4">
+                    <div class="hover-animate-card text-theme-light p-4 rounded bg-secondary bg-opacity-10">
+                        <i class="bi bi-briefcase text-theme-accent feature-icon"></i>
+                        <h4>Placement Support</h4>
+                        <p class="text-theme-muted">Get career assistance.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. MEET THE TEAM SECTION -->
+        <div id="team" class="container mb-5 py-3">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="hover-animate-card text-theme-light"></div>
+                </div>
+                <div class="col-md-6">
+                    <div class="hover-animate-card text-theme-light"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. CONTACT SECTION -->
+        <div id="contact" class="container py-5">
+            <div class="row">
+                <div class="col-12 text-theme-light"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="https://jsdelivr.net"></script>
+</body>
+</html>
