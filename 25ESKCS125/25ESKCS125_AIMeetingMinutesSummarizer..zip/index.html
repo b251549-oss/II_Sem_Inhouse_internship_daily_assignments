@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Meeting Minutes Summarizer</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <!-- LOGIN SCREEN -->
+    <div id="authScreen">
+      <div class="card" style="max-width:420px;margin:4rem auto;">
+        <h1 style="text-align:center;margin-bottom:0.5rem;">AI Meeting Minutes</h1>
+        <p class="subtitle" style="text-align:center;margin-bottom:1.5rem;">HTML · CSS · PHP · MySQL · jQuery</p>
+        
+        <div id="loginForm">
+          <label>Email</label>
+          <input type="email" id="loginEmail" placeholder="demo@example.com" value="demo@example.com" />
+          <label>Password</label>
+          <input type="password" id="loginPass" placeholder="password123" value="password123" />
+          <button class="btn" id="btnLogin" style="width:100%;margin-top:0.5rem;">Login</button>
+          <p style="text-align:center;margin-top:1rem;font-size:0.9rem;">
+            No account? <a href="#" id="showRegister" style="color:var(--accent);">Register</a>
+          </p>
+        </div>
+
+        <div id="registerForm" class="hidden">
+          <label>Name</label>
+          <input type="text" id="regName" />
+          <label>Email</label>
+          <input type="email" id="regEmail" />
+          <label>Password (min 6)</label>
+          <input type="password" id="regPass" />
+          <button class="btn" id="btnRegister" style="width:100%;margin-top:0.5rem;">Create Account</button>
+          <p style="text-align:center;margin-top:1rem;font-size:0.9rem;">
+            Have an account? <a href="#" id="showLogin" style="color:var(--accent);">Login</a>
+          </p>
+        </div>
+        <p id="authError" style="color:var(--danger);text-align:center;margin-top:1rem;"></p>
+      </div>
+    </div>
+
+    <!-- MAIN APP -->
+    <div id="appScreen" class="hidden">
+      <header>
+        <div>
+          <h1>AI Meeting Minutes</h1>
+          <p class="subtitle">Welcome, <span id="userName"></span></p>
+        </div>
+        <div class="btn-group">
+          <button class="btn btn-secondary btn-sm" id="btnSettings">Settings</button>
+          <button class="btn btn-secondary btn-sm" id="btnLogout">Logout</button>
+        </div>
+      </header>
+
+      <div class="tabs">
+        <button class="tab active" data-tab="create">Create Summary</button>
+        <button class="tab" data-tab="meetings">Saved Meetings</button>
+        <button class="tab" data-tab="actions">Action Items</button>
+      </div>
+
+      <!-- CREATE -->
+      <div id="tab-create" class="tab-content">
+        <div class="card">
+          <h2>1. Meeting Info & Notes</h2>
+          <div class="row">
+            <div><label>Title *</label><input type="text" id="title" placeholder="Weekly Product Sync" /></div>
+            <div><label>Date</label><input type="date" id="meeting_date" /></div>
+          </div>
+          <div class="row">
+            <div><label>Organizer</label><input type="text" id="organizer" /></div>
+            <div><label>Attendees</label><input type="text" id="attendees" placeholder="Comma separated" /></div>
+          </div>
+          <label>Raw Transcript / Notes *</label>
+          <textarea id="raw_notes" rows="8" placeholder="Paste meeting notes here..."></textarea>
+
+          <div class="btn-group">
+            <button class="btn" id="btnAI">✨ Summarize with AI</button>
+            <button class="btn btn-secondary" id="btnGeneratePrompt">Generate Prompt Only</button>
+            <button class="btn btn-secondary" id="btnCopyPrompt">Copy Prompt</button>
+          </div>
+          <p class="status-msg hidden" id="aiStatus"></p>
+        </div>
+
+        <div class="card">
+          <h2>2. Structured Minutes</h2>
+          <label>Executive Summary</label>
+          <textarea id="executive_summary" rows="3"></textarea>
+          <label>Key Discussion Points</label>
+          <textarea id="discussion_points" rows="3"></textarea>
+          <label>Decisions</label>
+          <textarea id="decisions" rows="3"></textarea>
+          <label>Open Questions</label>
+          <textarea id="open_questions" rows="2"></textarea>
+          <label>Next Steps</label>
+          <textarea id="next_steps" rows="2"></textarea>
+
+          <h3 style="margin:1.2rem 0 0.8rem;font-size:1rem;">Action Items</h3>
+          <div id="actionItemsForm"></div>
+          <button class="btn btn-secondary btn-sm" id="btnAddAction">+ Add Action Item</button>
+
+          <div class="btn-group" style="margin-top:1.5rem;">
+            <button class="btn" id="btnSaveMeeting">💾 Save to Database</button>
+          </div>
+          <p class="status-msg hidden" id="saveStatus">Saved successfully!</p>
+        </div>
+
+        <div class="card hidden" id="promptCard">
+          <h2>Prompt (for manual use)</h2>
+          <textarea id="promptBox" readonly style="min-height:120px;font-family:monospace;font-size:0.8rem;"></textarea>
+        </div>
+      </div>
+
+      <!-- MEETINGS -->
+      <div id="tab-meetings" class="tab-content hidden">
+        <div class="card">
+          <div style="display:flex;gap:0.8rem;margin-bottom:1rem;">
+            <input type="text" id="searchMeetings" placeholder="Search meetings..." style="margin:0;flex:1;" />
+            <button class="btn btn-secondary btn-sm" id="btnSearch">Search</button>
+          </div>
+          <div id="meetingsList"><div class="empty">Loading...</div></div>
+        </div>
+        <div class="card hidden" id="meetingDetail">
+          <h2 id="detailTitle"></h2>
+          <div id="detailContent"></div>
+          <div class="btn-group" style="margin-top:1rem;">
+            <a class="btn btn-secondary btn-sm" id="btnExportMd" href="#">Export Markdown</a>
+            <a class="btn btn-secondary btn-sm" id="btnExportHtml" href="#">Export HTML</a>
+            <button class="btn btn-danger btn-sm" id="btnDeleteMeeting">Delete</button>
+            <button class="btn btn-secondary btn-sm" id="btnCloseDetail">Close</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ACTIONS -->
+      <div id="tab-actions" class="tab-content hidden">
+        <div class="card">
+          <div class="btn-group" style="margin-bottom:1rem;">
+            <button class="btn btn-secondary btn-sm filter-status" data-status="">All</button>
+            <button class="btn btn-secondary btn-sm filter-status" data-status="Open">Open</button>
+            <button class="btn btn-secondary btn-sm filter-status" data-status="In Progress">In Progress</button>
+            <button class="btn btn-secondary btn-sm filter-status" data-status="Done">Done</button>
+          </div>
+          <div style="overflow-x:auto;">
+            <table>
+              <thead><tr><th>Action</th><th>Owner</th><th>Deadline</th><th>Priority</th><th>Status</th><th>Meeting</th><th></th></tr></thead>
+              <tbody id="actionsTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- SETTINGS MODAL -->
+      <div id="settingsModal" class="hidden" style="position:fixed;inset:0;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;z-index:100;">
+        <div class="card" style="max-width:480px;width:90%;">
+          <h2>Settings — AI API</h2>
+          <p style="color:var(--muted);font-size:0.9rem;margin-bottom:1rem;">
+            Add an OpenAI-compatible API key (OpenAI, Grok, Together, Groq, etc.)
+          </p>
+          <label>API Base URL</label>
+          <input type="text" id="apiBase" value="https://api.openai.com/v1" placeholder="https://api.openai.com/v1" />
+          <label>API Key</label>
+          <input type="password" id="apiKey" placeholder="sk-..." />
+          <div class="btn-group">
+            <button class="btn" id="btnSaveApi">Save</button>
+            <button class="btn btn-secondary" id="btnCloseSettings">Close</button>
+          </div>
+          <p class="status-msg hidden" id="apiStatus">Saved!</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="js/app.js"></script>
+</body>
+</html>
