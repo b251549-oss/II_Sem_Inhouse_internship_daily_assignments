@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Meeting Minutes Summarizer</title>
+  <style>
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --border: #2a2e3a;
+      --text: #e8eaed;
+      --muted: #9aa0a6;
+      --accent: #8ab4f8;
+      --accent-hover: #aecbfa;
+      --success: #81c995;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      min-height: 100vh;
+      padding: 2rem 1rem;
+    }
+    .container { max-width: 960px; margin: 0 auto; }
+    header { text-align: center; margin-bottom: 2rem; }
+    h1 { font-size: 1.85rem; margin-bottom: 0.4rem; }
+    .subtitle { color: var(--muted); }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    label { display: block; font-size: 0.875rem; margin-bottom: 0.4rem; color: var(--muted); }
+    input, select, textarea {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.7rem 0.9rem;
+      color: var(--text);
+      font-size: 0.95rem;
+      font-family: inherit;
+      margin-bottom: 0.8rem;
+    }
+    textarea { min-height: 180px; resize: vertical; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    @media (max-width: 640px) { .row { grid-template-columns: 1fr; } }
+    .btn-row { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 0.5rem; }
+    button {
+      background: var(--accent);
+      color: #0f1117;
+      border: none;
+      border-radius: 8px;
+      padding: 0.7rem 1.3rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    button.secondary {
+      background: transparent;
+      color: var(--accent);
+      border: 1px solid var(--border);
+    }
+    #out {
+      font-family: ui-monospace, Consolas, monospace;
+      font-size: 0.82rem;
+      min-height: 280px;
+      background: #0a0c10;
+    }
+    .status { margin-top: 0.8rem; font-size: 0.85rem; color: var(--success); display: none; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Meeting Minutes Summarizer</h1>
+      <p class="subtitle">Paste notes → Summarize Now → copy minutes</p>
+    </header>
+
+    <div class="card">
+      <div class="row">
+        <div>
+          <label>Meeting Title (optional)</label>
+          <input id="title" type="text" placeholder="Weekly Product Sync" />
+        </div>
+        <div>
+          <label>Date (optional)</label>
+          <input id="date" type="date" />
+        </div>
+      </div>
+      <label>Raw Meeting Notes / Transcript</label>
+      <textarea id="notes" placeholder="Paste notes here..."></textarea>
+      <div class="btn-row">
+        <button onclick="summarizeNow()">Summarize Now</button>
+        <button class="secondary" onclick="copyMinutes()">Copy Minutes</button>
+        <button class="secondary" onclick="clearAll()">Clear</button>
+      </div>
+      <div id="status" class="status">Ready</div>
+    </div>
+
+    <div class="card">
+      <label>Meeting Minutes</label>
+      <textarea id="out" readonly></textarea>
+    </div>
+  </div>
+
+  <script>
+    function summarizeNow() {
+      const notes = document.getElementById('notes').value.trim();
+      if (!notes) { alert('Paste meeting notes first.'); return; }
+
+      const title = document.getElementById('title').value.trim() || pick(notes, /^(?:meeting|title)\s*[:\-]\s*(.+)/i) || 'Untitled Meeting';
+      const date = document.getElementById('date').value || pick(notes, /^(?:date)\s*[:\-]\s*(.+)/i) || '[Not specified]';
+      const attendees = pick(notes, /^(?:attendees|participants|present)\s*[:\-]\s*(.+)/i);
+
+      const lines = notes.split('\n').map(l => l.trim()).filter(Boolean);
+      const speakerRe = /^([A-Z][a-zA-Z .'-]{1,30})\s*[:\-]\s+(.+)/;
+      const actions = [], decisions = [], questions = [], nextSteps = [], discussion = [];
+      const speakers = [];
+
+      for (const line of lines) {
+        const sm = line.match(speakerRe);
+        const speaker = sm ? sm[1].trim() : '';
+        const text = sm ? sm[2].trim() : line;
+        if (speaker && speakers.indexOf(speaker) === -1) speakers.push(speaker);
+        if (/^(meeting|title|date|attendees)\s*[:\-]/i.test(line)) continue;
+        if (/\?|open question|undecided/i.test(text)) { questions.push(text); continue; }
+        if (/\b(next meeting|next sync|tomorrow eod)\b/i.test(text)) nextSteps.push(text);
+        if (/\b(decid|proposal|adopt|ship|agreed|depriorit)\w*/i.test(text)) decisions.push(text);
+        if (/\b(i('ll| will)|we will|need to|i can own|todo|follow.?up|targeting|can you)\b/i.test(text)) {
+          let owner = speaker || 'Unassigned';
+          const m = text.match(/\b([A-Z][a-z]+)\s+will\b/);
+          if (m) owner = m[1];
+          if (/^i\b/i.test(text) && speaker) owner = speaker;
+          actions.push({ text: text, owner: owner });
+        } else if (text.length > 20) {
+          discussion.push(text);
+        }
+      }
+
+      const att = attendees || (speakers.length ? speakers.join(', ') : '[Not specified]');
+      let md = '# Meeting Minutes: ' + title + '\n\n';
+      md += '**Date:** ' + date + '  \n';
+      md += '**Attendees:** ' + att + '\n\n';
+      md += '## Executive Summary\n';
+      md += 'Meeting "' + title + '" on ' + date + ' with ' + att + '. ';
+      md += decisions.length + ' decision(s) and ' + actions.length + ' action item(s) extracted.\n\n';
+      md += '## Key Discussion Points\n';
+      md += (discussion.slice(0, 8).map(d => '- ' + d).join('\n') || '- [None extracted]') + '\n\n';
+      md += '## Decisions\n';
+      md += (decisions.map((d, i) => (i + 1) + '. ' + d).join('\n') || 'No formal decisions were recorded.') + '\n\n';
+      md += '## Action Items\n\n';
+      md += '| # | Action Item | Owner | Status |\n|---|-------------|-------|--------|\n';
+      if (actions.length) {
+        actions.forEach((a, i) => { md += '| ' + (i + 1) + ' | ' + a.text + ' | ' + a.owner + ' | Open |\n'; });
+      } else {
+        md += '| 1 | [None extracted] | — | — |\n';
+      }
+      md += '\n## Open Questions\n' + (questions.map(q => '- ' + q).join('\n') || '- [None]') + '\n\n';
+      md += '## Next Steps\n' + (nextSteps.map(n => '- ' + n).join('\n') || '- [Not specified]') + '\n';
+
+      document.getElementById('out').value = md;
+      const s = document.getElementById('status');
+      s.textContent = 'Minutes ready.';
+      s.style.display = 'block';
+    }
+
+    function pick(text, re) {
+      const m = text.match(re);
+      return m ? m[1].trim() : '';
+    }
+
+    function copyMinutes() {
+      const box = document.getElementById('out');
+      if (!box.value) { alert('Summarize first.'); return; }
+      navigator.clipboard.writeText(box.value);
+      const s = document.getElementById('status');
+      s.textContent = 'Copied!';
+      s.style.display = 'block';
+    }
+
+    function clearAll() {
+      document.getElementById('notes').value = '';
+      document.getElementById('title').value = '';
+      document.getElementById('date').value = '';
+      document.getElementById('out').value = '';
+    }
+  </script>
+</body>
+</html>
