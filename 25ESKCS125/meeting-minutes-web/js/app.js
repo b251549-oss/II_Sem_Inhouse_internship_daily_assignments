@@ -90,10 +90,41 @@ Return structured Markdown with: Executive Summary, Key Discussion Points, Decis
     setTimeout(() => $('#aiStatus').addClass('hidden'), 2000);
   });
 
+  function applySummary(d, source) {
+    $('#executive_summary').val(d.executive_summary || '');
+    $('#discussion_points').val(d.discussion_points || '');
+    $('#decisions').val(d.decisions || '');
+    $('#open_questions').val(d.open_questions || '');
+    $('#next_steps').val(d.next_steps || '');
+    if (d.title && !$('#title').val()) $('#title').val(d.title);
+    if (d.organizer && !$('#organizer').val()) $('#organizer').val(d.organizer);
+    if (d.attendees && !$('#attendees').val()) $('#attendees').val(d.attendees);
+    $('#actionItemsForm').empty();
+    actionCount = 0;
+    if (d.action_items && d.action_items.length) {
+      d.action_items.forEach(a => addActionRow(a));
+    } else {
+      addActionRow();
+    }
+    $('#aiStatus').text(source + ' ready — review and save.').removeClass('hidden');
+    setTimeout(() => $('#aiStatus').addClass('hidden'), 4000);
+  }
+
+  function localSummarize() {
+    const notes = $('#raw_notes').val().trim();
+    const d = summarizeMeetingNotes(notes, {
+      title: $('#title').val(),
+      date: $('#meeting_date').val(),
+      organizer: $('#organizer').val(),
+      attendees: $('#attendees').val()
+    });
+    applySummary(d, 'Local summary');
+  }
+
   $('#btnAI').on('click', function () {
     const notes = $('#raw_notes').val().trim();
     if (!notes) return alert('Paste notes first');
-    $('#aiStatus').text('Calling AI... please wait').removeClass('hidden');
+    $('#aiStatus').text('Summarizing...').removeClass('hidden');
     $('#btnAI').prop('disabled', true);
 
     $.ajax({
@@ -105,31 +136,17 @@ Return structured Markdown with: Executive Summary, Key Discussion Points, Decis
       }),
       success: function (res) {
         $('#btnAI').prop('disabled', false);
-        if (res.error) {
-          $('#aiStatus').text(res.error);
+        if (res.error || !res.data) {
+          localSummarize();
+          $('#aiStatus').text((res.error || 'No API key') + ' — used built-in summarizer instead.').removeClass('hidden');
           return;
         }
-        const d = res.data;
-        $('#executive_summary').val(d.executive_summary || '');
-        $('#discussion_points').val(d.discussion_points || '');
-        $('#decisions').val(d.decisions || '');
-        $('#open_questions').val(d.open_questions || '');
-        $('#next_steps').val(d.next_steps || '');
-
-        // Clear and fill action items
-        $('#actionItemsForm').empty();
-        actionCount = 0;
-        if (d.action_items && d.action_items.length) {
-          d.action_items.forEach(a => addActionRow(a));
-        } else {
-          addActionRow();
-        }
-        $('#aiStatus').text('AI summary ready! Review and save.').removeClass('hidden');
-        setTimeout(() => $('#aiStatus').addClass('hidden'), 4000);
+        applySummary(res.data, 'AI summary');
       },
       error: function () {
         $('#btnAI').prop('disabled', false);
-        $('#aiStatus').text('AI request failed. Check API key in Settings.');
+        localSummarize();
+        $('#aiStatus').text('No live AI — used built-in summarizer (works offline).').removeClass('hidden');
       }
     });
   });
