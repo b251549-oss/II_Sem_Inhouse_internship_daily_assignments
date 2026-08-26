@@ -3,192 +3,294 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AI Meeting Minutes Summarizer</title>
+  <title>Meeting Minutes Summarizer</title>
   <style>
     :root {
-      --bg: #0f1117;
-      --surface: #1a1d27;
-      --border: #2a2e3a;
-      --text: #e8eaed;
-      --muted: #9aa0a6;
-      --accent: #8ab4f8;
-      --accent-hover: #aecbfa;
-      --success: #81c995;
+      --bg: #0f1117; --surface: #1a1d27; --border: #2a2e3a;
+      --text: #e8eaed; --muted: #9aa0a6; --accent: #8ab4f8; --success: #81c995;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: system-ui, -apple-system, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.5;
-      min-height: 100vh;
-      padding: 2rem 1rem;
+      background: var(--bg); color: var(--text);
+      line-height: 1.5; min-height: 100vh; padding: 1.5rem 1rem;
     }
-    .container { max-width: 960px; margin: 0 auto; }
-    header { text-align: center; margin-bottom: 2rem; }
-    h1 { font-size: 1.85rem; margin-bottom: 0.4rem; }
-    .subtitle { color: var(--muted); }
+    .container { max-width: 920px; margin: 0 auto; }
+    header { text-align: center; margin-bottom: 1.5rem; }
+    h1 { font-size: 1.7rem; margin-bottom: .35rem; }
+    .subtitle { color: var(--muted); font-size: .95rem; }
     .card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 1.5rem;
-      margin-bottom: 1.5rem;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 1.25rem; margin-bottom: 1.25rem;
     }
-    label { display: block; font-size: 0.875rem; margin-bottom: 0.4rem; color: var(--muted); }
-    input, select, textarea {
-      width: 100%;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 0.7rem 0.9rem;
-      color: var(--text);
-      font-size: 0.95rem;
-      font-family: inherit;
-      margin-bottom: 0.8rem;
+    label { display: block; font-size: .85rem; color: var(--muted); margin-bottom: .35rem; }
+    input, textarea {
+      width: 100%; background: var(--bg); border: 1px solid var(--border);
+      border-radius: 8px; padding: .7rem .9rem; color: var(--text);
+      font-size: .95rem; font-family: inherit; margin-bottom: .8rem;
     }
-    textarea { min-height: 180px; resize: vertical; }
+    textarea { min-height: 170px; resize: vertical; }
+    #out { min-height: 300px; font-family: ui-monospace, Consolas, monospace; font-size: .82rem; background: #0a0c10; }
     .row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
     @media (max-width: 640px) { .row { grid-template-columns: 1fr; } }
-    .btn-row { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 0.5rem; }
+    .btn-row { display: flex; gap: .6rem; flex-wrap: wrap; }
     button {
-      background: var(--accent);
-      color: #0f1117;
-      border: none;
-      border-radius: 8px;
-      padding: 0.7rem 1.3rem;
-      font-weight: 600;
-      cursor: pointer;
+      background: var(--accent); color: #0f1117; border: none; border-radius: 8px;
+      padding: .65rem 1.2rem; font-weight: 600; cursor: pointer;
     }
-    button.secondary {
-      background: transparent;
-      color: var(--accent);
-      border: 1px solid var(--border);
-    }
-    #out {
-      font-family: ui-monospace, Consolas, monospace;
-      font-size: 0.82rem;
-      min-height: 280px;
-      background: #0a0c10;
-    }
-    .status { margin-top: 0.8rem; font-size: 0.85rem; color: var(--success); display: none; }
+    button.secondary { background: transparent; color: var(--accent); border: 1px solid var(--border); }
+    .status { margin-top: .7rem; color: var(--success); font-size: .85rem; display: none; }
   </style>
 </head>
 <body>
   <div class="container">
     <header>
       <h1>Meeting Minutes Summarizer</h1>
-      <p class="subtitle">Paste notes → Summarize Now → copy minutes</p>
+      <p class="subtitle">Each paste produces its own attendees, actions, questions, and next steps</p>
     </header>
-
     <div class="card">
       <div class="row">
         <div>
           <label>Meeting Title (optional)</label>
-          <input id="title" type="text" placeholder="Weekly Product Sync" />
+          <input id="title" placeholder="Weekly Product Sync" />
         </div>
         <div>
           <label>Date (optional)</label>
           <input id="date" type="date" />
         </div>
       </div>
-      <label>Raw Meeting Notes / Transcript</label>
-      <textarea id="notes" placeholder="Paste notes here..."></textarea>
+      <label>Raw notes / transcript</label>
+      <textarea id="notes" placeholder="Paste different notes each time..."></textarea>
       <div class="btn-row">
         <button onclick="summarizeNow()">Summarize Now</button>
         <button class="secondary" onclick="copyMinutes()">Copy Minutes</button>
         <button class="secondary" onclick="clearAll()">Clear</button>
       </div>
-      <div id="status" class="status">Ready</div>
+      <div id="status" class="status"></div>
     </div>
-
     <div class="card">
-      <label>Meeting Minutes</label>
+      <label>Minutes (unique to this input)</label>
       <textarea id="out" readonly></textarea>
     </div>
   </div>
+<script>
+function headerVal(text, keys) {
+  const lines = text.split(/\r?\n/);
+  for (const line of lines) {
+    const m = line.match(new RegExp('^\\s*(?:' + keys + ')\\s*[:\\-]\\s*(.+)$', 'i'));
+    if (m && m[1].trim()) return m[1].trim();
+  }
+  return '';
+}
 
-  <script>
-    function summarizeNow() {
-      const notes = document.getElementById('notes').value.trim();
-      if (!notes) { alert('Paste meeting notes first.'); return; }
+function unique(arr) {
+  const seen = {};
+  const out = [];
+  arr.forEach(function (x) {
+    const k = String(x).replace(/\s+/g, ' ').trim();
+    if (!k) return;
+    const low = k.toLowerCase();
+    if (seen[low]) return;
+    seen[low] = true;
+    out.push(k);
+  });
+  return out;
+}
 
-      const title = document.getElementById('title').value.trim() || pick(notes, /^(?:meeting|title)\s*[:\-]\s*(.+)/i) || 'Untitled Meeting';
-      const date = document.getElementById('date').value || pick(notes, /^(?:date)\s*[:\-]\s*(.+)/i) || '[Not specified]';
-      const attendees = pick(notes, /^(?:attendees|participants|present)\s*[:\-]\s*(.+)/i);
+function looksLikeName(s) {
+  s = s.trim();
+  if (!s || s.length > 40) return false;
+  if (/^(ok|okay|so|the|this|that|and|but|we|i|yes|no|great|also|current|open|next)$/i.test(s)) return false;
+  return /^[A-Z][a-z]+(?:\s+[A-Z][a-z]+){0,2}$/.test(s);
+}
 
-      const lines = notes.split('\n').map(l => l.trim()).filter(Boolean);
-      const speakerRe = /^([A-Z][a-zA-Z .'-]{1,30})\s*[:\-]\s+(.+)/;
-      const actions = [], decisions = [], questions = [], nextSteps = [], discussion = [];
-      const speakers = [];
+function extractNames(text) {
+  const names = [];
+  const att = headerVal(text, 'attendees|participants|present|people|team');
+  if (att) att.split(/[,;/]| and /i).forEach(function (n) { if (looksLikeName(n) || n.trim().length > 1) names.push(n.trim()); });
 
-      for (const line of lines) {
-        const sm = line.match(speakerRe);
-        const speaker = sm ? sm[1].trim() : '';
-        const text = sm ? sm[2].trim() : line;
-        if (speaker && speakers.indexOf(speaker) === -1) speakers.push(speaker);
-        if (/^(meeting|title|date|attendees)\s*[:\-]/i.test(line)) continue;
-        if (/\?|open question|undecided/i.test(text)) { questions.push(text); continue; }
-        if (/\b(next meeting|next sync|tomorrow eod)\b/i.test(text)) nextSteps.push(text);
-        if (/\b(decid|proposal|adopt|ship|agreed|depriorit)\w*/i.test(text)) decisions.push(text);
-        if (/\b(i('ll| will)|we will|need to|i can own|todo|follow.?up|targeting|can you)\b/i.test(text)) {
-          let owner = speaker || 'Unassigned';
-          const m = text.match(/\b([A-Z][a-z]+)\s+will\b/);
-          if (m) owner = m[1];
-          if (/^i\b/i.test(text) && speaker) owner = speaker;
-          actions.push({ text: text, owner: owner });
-        } else if (text.length > 20) {
-          discussion.push(text);
-        }
+  text.split(/\r?\n/).forEach(function (line) {
+    const sm = line.match(/^\s*([A-Z][a-zA-Z.'-]{1,24})(?:\s+[A-Z][a-zA-Z.'-]{1,24})?\s*[:\-]\s+\S/);
+    if (sm) names.push(sm[1].trim());
+  });
+
+  const extra = text.match(/\b[A-Z][a-z]{2,15}(?:\s+[A-Z][a-z]{2,15})?\b/g) || [];
+  extra.forEach(function (n) {
+    if (looksLikeName(n) && !/^(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|August|July|June|April|Meeting|Date|Attendees|Open|Next|Great|Current|Backend|Analytics|Claude|Grok)$/.test(n)) {
+      // only add if it appears as a speaker-like role at least once
+    }
+  });
+  return unique(names);
+}
+
+function speakerLines(text) {
+  const rows = [];
+  text.split(/\r?\n/).forEach(function (line) {
+    line = line.trim();
+    if (!line) return;
+    const sm = line.match(/^([A-Z][a-zA-Z.'-]{1,24}(?:\s+[A-Z][a-zA-Z.'-]{1,24})?)\s*[:\-]\s+(.+)$/);
+    if (sm) rows.push({ speaker: sm[1].trim(), text: sm[2].trim(), raw: line });
+    else rows.push({ speaker: '', text: line.replace(/^[-*•\d.)]+\s*/, ''), raw: line });
+  });
+  return rows;
+}
+
+function isMeta(s) {
+  return /^(meeting|title|date|attendees|participants|present|organizer|location|time)\s*[:\-]/i.test(s);
+}
+
+function isQuestion(s) {
+  return /\?/.test(s) || /\b(open question|undecided|not sure|should we|do we|can we|what if|parking lot)\b/i.test(s);
+}
+
+function isAction(s) {
+  return /\b(i('ll| will)|we('ll| will)|i can|can you|please |need to|needs to|has to|should |must |todo|to-do|action item|follow[- ]up|take (this|it|that)|own the|handle the|targeting|by (eod|monday|tuesday|wednesday|thursday|friday|end)|due |deadline|assign)\b/i.test(s)
+    || /^\s*[-*•]\s+\S/.test(s)
+    || /^\s*\d+[.)]\s+\S/.test(s);
+}
+
+function isDecision(s) {
+  return /\b(decid(e|ed|ing)|decision|agreed|approve[d]?|proposal|we will go|going with|lock(ed)?|adopt|ship|depriorit|move[sd]? .* to|final(ly)?|confirmed)\b/i.test(s);
+}
+
+function isNext(s) {
+  return /\b(next meeting|next sync|next week|follow[- ]up|tomorrow|eod|schedule|reconvene|same time)\b/i.test(s);
+}
+
+function ownerOf(row) {
+  const s = row.text;
+  const will = s.match(/\b([A-Z][a-z]{2,15})\s+(will|can own|to own|is handling|owns)\b/);
+  if (will) return will[1];
+  if (/^(i|'ll|i'll|i will|i can)\b/i.test(s) && row.speaker) return row.speaker;
+  if (row.speaker) return row.speaker;
+  return 'Unassigned';
+}
+
+function deadlineOf(s) {
+  const m = s.match(/\b(by\s+)?((next\s+)?(monday|tuesday|wednesday|thursday|friday|week|month)|eod|end of (day|week|month)|august\s+\d{1,2}|july\s+\d{1,2}|september\s+\d{1,2}|\d{4}-\d{2}-\d{2}|\d{1,2}\/\d{1,2}(\/\d{2,4})?)\b/i);
+  return m ? m[0].replace(/^by\s+/i, '') : '';
+}
+
+function summarizeNow() {
+  const raw = document.getElementById('notes').value.replace(/\r\n/g, '\n').trim();
+  if (!raw) { alert('Paste meeting notes first.'); return; }
+
+  const titleIn = document.getElementById('title').value.trim();
+  const dateIn = document.getElementById('date').value;
+  const title = titleIn || headerVal(raw, 'meeting|title|subject') || 'Untitled Meeting';
+  const date = dateIn || headerVal(raw, 'date') || '[Not specified]';
+  const organizer = headerVal(raw, 'organizer|chair|hosted by');
+
+  const rows = speakerLines(raw);
+  const names = extractNames(raw);
+  const attendees = names.length ? names.join(', ') : (headerVal(raw, 'attendees|participants|present') || '[Not specified]');
+
+  const actions = [];
+  const decisions = [];
+  const questions = [];
+  const nextSteps = [];
+  const discussion = [];
+
+  rows.forEach(function (row) {
+    const s = row.text;
+    if (isMeta(row.raw) || isMeta(s)) return;
+    if (isQuestion(s)) { questions.push(s); return; }
+    if (isNext(s)) nextSteps.push((row.speaker ? row.speaker + ': ' : '') + s);
+    if (isDecision(s)) decisions.push(s);
+    if (isAction(s)) {
+      actions.push({
+        text: s,
+        owner: ownerOf(row),
+        deadline: deadlineOf(s) || '—'
+      });
+    } else if (s.length > 25) {
+      discussion.push((row.speaker ? row.speaker + ' — ' : '') + s);
+    }
+  });
+
+  // If no explicit actions, turn short imperative / commitment lines into actions
+  if (!actions.length) {
+    rows.forEach(function (row) {
+      if (isMeta(row.raw) || isQuestion(row.text)) return;
+      if (row.text.length > 18 && row.text.length < 180 && (row.speaker || /^(please|let's|lets|need)\b/i.test(row.text))) {
+        actions.push({ text: row.text, owner: row.speaker || 'Unassigned', deadline: deadlineOf(row.text) || '—' });
       }
+    });
+  }
 
-      const att = attendees || (speakers.length ? speakers.join(', ') : '[Not specified]');
-      let md = '# Meeting Minutes: ' + title + '\n\n';
-      md += '**Date:** ' + date + '  \n';
-      md += '**Attendees:** ' + att + '\n\n';
-      md += '## Executive Summary\n';
-      md += 'Meeting "' + title + '" on ' + date + ' with ' + att + '. ';
-      md += decisions.length + ' decision(s) and ' + actions.length + ' action item(s) extracted.\n\n';
-      md += '## Key Discussion Points\n';
-      md += (discussion.slice(0, 8).map(d => '- ' + d).join('\n') || '- [None extracted]') + '\n\n';
-      md += '## Decisions\n';
-      md += (decisions.map((d, i) => (i + 1) + '. ' + d).join('\n') || 'No formal decisions were recorded.') + '\n\n';
-      md += '## Action Items\n\n';
-      md += '| # | Action Item | Owner | Status |\n|---|-------------|-------|--------|\n';
-      if (actions.length) {
-        actions.forEach((a, i) => { md += '| ' + (i + 1) + ' | ' + a.text + ' | ' + a.owner + ' | Open |\n'; });
-      } else {
-        md += '| 1 | [None extracted] | — | — |\n';
-      }
-      md += '\n## Open Questions\n' + (questions.map(q => '- ' + q).join('\n') || '- [None]') + '\n\n';
-      md += '## Next Steps\n' + (nextSteps.map(n => '- ' + n).join('\n') || '- [Not specified]') + '\n';
+  // If still no next steps, use last 1–2 non-meta lines
+  if (!nextSteps.length) {
+    const useful = rows.filter(function (r) { return !isMeta(r.raw) && r.text.length > 12; });
+    useful.slice(-2).forEach(function (r) { nextSteps.push(r.text); });
+  }
 
-      document.getElementById('out').value = md;
-      const s = document.getElementById('status');
-      s.textContent = 'Minutes ready.';
-      s.style.display = 'block';
-    }
+  const ua = unique(actions.map(function (a) { return a.text + '|' + a.owner; }));
+  const actionUniq = [];
+  const seenA = {};
+  actions.forEach(function (a) {
+    const k = a.text.toLowerCase();
+    if (seenA[k]) return;
+    seenA[k] = true;
+    actionUniq.push(a);
+  });
 
-    function pick(text, re) {
-      const m = text.match(re);
-      return m ? m[1].trim() : '';
-    }
+  let md = '# Meeting Minutes: ' + title + '\n\n';
+  md += '**Date:** ' + date + '  \n';
+  md += '**Organizer:** ' + (organizer || '[Not specified]') + '  \n';
+  md += '**Attendees:** ' + attendees + '\n\n';
+  md += '## Executive Summary\n';
+  md += 'Notes for "' + title + '"' + (date !== '[Not specified]' ? ' (' + date + ')' : '') + '. ';
+  md += names.length ? ('People mentioned: ' + names.join(', ') + '. ') : '';
+  md += decisions.length + ' decision(s), ' + actionUniq.length + ' action item(s), ' + questions.length + ' open question(s).\n\n';
+  md += '## Key Discussion Points\n';
+  const disc = unique(discussion).slice(0, 8);
+  md += (disc.length ? disc.map(function (d) { return '- ' + d; }).join('\n') : '- [No extra discussion extracted]') + '\n\n';
+  md += '## Decisions\n';
+  md += unique(decisions).length
+    ? unique(decisions).map(function (d, i) { return (i + 1) + '. ' + d; }).join('\n')
+    : 'No formal decisions were recorded in this input.';
+  md += '\n\n## Action Items\n\n';
+  md += '| # | Action Item | Owner | Deadline |\n|---|-------------|-------|----------|\n';
+  if (actionUniq.length) {
+    actionUniq.forEach(function (a, i) {
+      md += '| ' + (i + 1) + ' | ' + a.text.replace(/\|/g, '/') + ' | ' + a.owner + ' | ' + a.deadline + ' |\n';
+    });
+  } else {
+    md += '| 1 | [None found in this input] | — | — |\n';
+  }
+  md += '\n## Open Questions\n';
+  md += unique(questions).length
+    ? unique(questions).map(function (q) { return '- ' + q; }).join('\n')
+    : '- [No questions found in this input]';
+  md += '\n\n## Next Steps\n';
+  md += unique(nextSteps).length
+    ? unique(nextSteps).map(function (n) { return '- ' + n; }).join('\n')
+    : '- [No follow-up language found in this input]';
+  md += '\n';
 
-    function copyMinutes() {
-      const box = document.getElementById('out');
-      if (!box.value) { alert('Summarize first.'); return; }
-      navigator.clipboard.writeText(box.value);
-      const s = document.getElementById('status');
-      s.textContent = 'Copied!';
-      s.style.display = 'block';
-    }
+  document.getElementById('out').value = md;
+  const st = document.getElementById('status');
+  st.style.display = 'block';
+  st.textContent = 'Built from THIS paste — ' + names.length + ' attendee(s), ' +
+    actionUniq.length + ' action(s), ' + unique(questions).length + ' question(s).';
+}
 
-    function clearAll() {
-      document.getElementById('notes').value = '';
-      document.getElementById('title').value = '';
-      document.getElementById('date').value = '';
-      document.getElementById('out').value = '';
-    }
-  </script>
+function copyMinutes() {
+  const box = document.getElementById('out');
+  if (!box.value) { alert('Summarize first.'); return; }
+  navigator.clipboard.writeText(box.value);
+  const st = document.getElementById('status');
+  st.style.display = 'block';
+  st.textContent = 'Copied.';
+}
+
+function clearAll() {
+  document.getElementById('notes').value = '';
+  document.getElementById('title').value = '';
+  document.getElementById('date').value = '';
+  document.getElementById('out').value = '';
+  document.getElementById('status').style.display = 'none';
+}
+</script>
 </body>
 </html>
